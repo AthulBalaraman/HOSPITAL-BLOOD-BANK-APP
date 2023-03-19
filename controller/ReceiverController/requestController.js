@@ -15,7 +15,6 @@ const addRequest = async (req, res) => {
       hospitalId: hospitalId,
       bloodGroup: bloodGroup
     }).save()
-    // const request = newRequest.save();
     res.status(200).json({ message: "Request sent" });
   } catch (error) {
     res

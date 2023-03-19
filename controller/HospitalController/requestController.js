@@ -37,7 +37,7 @@ try {
   const requestResult = await Request.aggregate([
     { $match: { hospitalId: hospitalId } },
     { $match: { bloodGroup: bloodGroup } },
-  ]);
+  ]); // to get the requests of a particular blood group
   res.status(200).json(requestResult);
 } catch (error) {
   res.status(500).json({message:"Couldn't load request", error:error.message})
