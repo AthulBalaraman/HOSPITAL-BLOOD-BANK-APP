@@ -1,25 +1,22 @@
 const Hospital = require("../../model/Hospital");
 const Blood = require("../../model/BloodBank");
-const { count } = require("../../model/Hospital");
 
 const addSample = async (req, res) => {
   try {
     let blocker = false;
     const { hospitalId, bloodGroup, count } = req.body;
     const bloodList = await Blood.find({ hospitalId: hospitalId });
-    console.log("This is blood list", bloodList);
     await bloodList.map((item) => {
-      console.log(item.bloodGroup);
+      // Restricting adding the blood group already added.
       if (item.bloodGroup == bloodGroup) {
         blocker = true;
-        res
-          .status(503)
-          .json({
-            message: "Blood group already present please update the count",
-          });
+        res.status(503).json({
+          message: "Blood group already present please update the count",
+        });
       }
     });
     if (blocker == false) {
+      // If the blood group with the same name is not there , then add the new blood group
       const newBloodSample = new Blood({
         bloodGroup: bloodGroup,
         count: count,
@@ -33,38 +30,55 @@ const addSample = async (req, res) => {
   }
 };
 
-const editSample = async(req,res)=>{
-  console.log("reached edit")
-  const bloodId = req.query.id
-  const count = req.body.count
-  await Blood.findByIdAndUpdate(bloodId,{
-    count:count
-  })
-  const bloodDetails = await Blood.findById(bloodId)
-  console.log("This is blood Details ", bloodDetails)
-  const minimumCount = bloodDetails.count
-  console.log("THis is minimum ", minimumCount)
-  if(minimumCount == 0){
-    await Blood.findByIdAndDelete(bloodId)
-    res.status(200).json({message:"Blood group deleted"})
+const editSample = async (req, res) => {
+  try {
+    const bloodId = req.query.id;
+    const count = req.body.count;
+    await Blood.findByIdAndUpdate(bloodId, {
+      count: count,
+    });
+    const bloodDetails = await Blood.findById(bloodId);
+    const minimumCount = bloodDetails.count;
+
+    // Deleting the blood sample if the updated count is zero
+    if (minimumCount == 0) {
+      await Blood.findByIdAndDelete(bloodId);
+      res.status(200).json({ message: "Blood group deleted" });
+    } else {
+      res.status(200).json({ message: "Blood details updated" });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
-  else{
-    res.status(200).json({message:"Blood details updated"})
+};
+
+const deleteSample = async (req, res) => {
+  try {
+    const bloodId = req.query.id;
+    await Blood.findByIdAndDelete(bloodId);
+    res.status(200).json({ message: "Blood group deleted" });
+  } catch (error) {
+    res.status(500).json({ message: "Delete Unsuccessfull" });
   }
+};
+
+const showBloodList = async (req, res) => {
+try {
+  const hospitalId = req.body.hospitalId
+  console.log("This is hosptial id from veiw bloodlist",hospitalId)
+  const bloodList = await Blood.find({hospitalId:hospitalId})
+  console.log("this is response.data ", bloodList)
+  res.status(200).json({bloodList:bloodList})
+} catch (error) {
+  res.status(500).json({message:"Couldnt load the details", error:error.message})
+}
 }
 
-const deleteSample = async(req,res)=>{
-try {
-  const bloodId = req.query.id
-  await Blood.findByIdAndDelete(bloodId)
-  res.status(200).json({message:"Blood group deleted"})
-} catch (error) {
-  res.status(500).json({message:"Delete Unsuccessfull"})
-}
-}
+
 
 module.exports = {
   addSample,
   editSample,
-  deleteSample
+  deleteSample,
+  showBloodList
 };

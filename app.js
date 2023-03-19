@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser')
 const PORT = 5000
 const hospitalRouter = require('./routes/hospitalRoutes')
 const receiverRouter = require('./routes/receiverRoutes')
+const publicRouter = require('./routes/publicRoutes')
 const db = require('./config/db')
 
 app.use(express.urlencoded({extended: true}))
@@ -33,8 +34,10 @@ db(()=>{
   }
 });
 
+app.use('/',publicRouter)
 app.use('/hospital',hospitalRouter)
 app.use('/receiver',receiverRouter)
+
 
 
 app.listen(PORT, ()=>{

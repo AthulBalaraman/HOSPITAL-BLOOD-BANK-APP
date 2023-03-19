@@ -1,13 +1,6 @@
 const bcrypt = require("bcrypt");
 const Hospital = require("../../model/Hospital");
 
-const showRegisterPage = (req, res) => {
-  try {
-    res.status(200).json({ message: "This is hospital register page" });
-  } catch (error) {
-    res.status(404).json(error);
-  }
-};
 
 const registerHospital = async (req, res) => {
   try {
@@ -28,13 +21,7 @@ const registerHospital = async (req, res) => {
   }
 };
 
-const showLoginPage = (req, res) => {
-  try {
-    res.status(200).json({ message: "This is hospital login page" });
-  } catch (error) {
-    res.status(404).json(error);
-  }
-};
+
 
 const hospitalLogin = async (req, res) => {
   try {
@@ -62,8 +49,6 @@ const hospitalLogin = async (req, res) => {
 };
 
 module.exports = {
-  showLoginPage,
-  showRegisterPage,
   registerHospital,
   hospitalLogin,
 };
